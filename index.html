@@ -4,101 +4,130 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-
-    <style>
-      #child {
-        width: 100px;
-        height: 100px;
-        background-color: lightblue;
-      }
-
-      #parent {
-        width: 200px;
-        height: 200px;
-        background-color: lightcoral;
-      }
-
-      #grandparent {
-        width: 300px;
-        height: 300px;
-        background-color: lightpink;
-      }
-    </style>
+    <script src="https://unpkg.com/react@^16/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@16.13.0/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.js"></script>
   </head>
   <body>
-    <div id="user" class="common">
-      user
+    <div id="root"></div>
+    <script type="text/babel">
+      class Parent extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            balance: 1000,
+            showChild: false,
+          };
+          console.log("constructor() - Parent Component");
+        }
 
-      <ul class="box common">
-        <li id="john">John</li>
-        <li id="peter">Peter</li>
-      </ul>
-    </div>
+        componentDidMount() {
+          console.log("componentDidMount() - Parent Component");
+        }
 
-    <div id="grandparent">
-      <div id="parent">
-        <div id="child"></div>
-      </div>
-    </div>
+        componentDidUpdate(prevProps, prevState) {
+          console.log("componentDidUpdate() - Parent Component", {
+            prevProps,
+            prevState,
+          });
+        }
+
+        componentWillUnmount() {
+          console.log("coomponentWillUnmount() - Parent Component");
+        }
+
+        render() {
+          console.log("render() - Parent Component");
+
+          return (
+            <div>
+              <p>Name: {this.props.name}</p>
+              <p>继承者们的故事</p>
+              <p>Parent</p>
+              <p>account balance: {this.state.balance}</p>
+              <button
+                onClick={() => {
+                  this.setState({
+                    showChild: !this.state.showChild,
+                  });
+                }}
+              >
+                生小宝宝 / 消失掉小宝宝
+              </button>
+              <button
+                onClick={() => {
+                  this.setState({
+                    balance: this.state.balance + 100,
+                  });
+                }}
+              >
+                给小宝宝挣奶粉钱
+              </button>
+
+              <br />
+              <br />
+              <br />
+
+              {this.state.showChild ? (
+                <Child balance={this.state.balance} />
+              ) : (
+                "no child"
+              )}
+            </div>
+          );
+        }
+      }
+
+      class Child extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            balance: 0,
+          };
+          console.log("constructor() - Child Component");
+        }
+
+        componentDidMount() {
+          console.log("componentDidMount() - Child Component");
+        }
+
+        componentDidUpdate(prevProps, prevState) {
+          console.log("componentDidUpdate() - Child Component", {
+            prevProps,
+            prevState,
+          });
+        }
+
+        componentWillUnmount() {
+          console.log("coomponentWillUnmount() - Child Component");
+        }
+
+        render() {
+          console.log("render() - Child Component");
+          return (
+            <div>
+              <p>Child</p>
+              <p>Parent's accont balance: {this.props.balance}</p>
+              <p>自己的小金库 {this.state.balance}</p>
+
+              <button
+                onClick={() => {
+                  this.setState({
+                    balance: this.state.balance + 100,
+                  });
+                }}
+              >
+                我要存钱
+              </button>
+            </div>
+          );
+        }
+      }
+
+      ReactDOM.render(
+        <Parent name="ZhangSan" />,
+        document.getElementById("root")
+      );
+    </script>
   </body>
-
-  <script>
-    // examples of finding elements
-    const oUser = document.getElementById("user");
-    const oLis = document.getElementsByTagName("li");
-    const boxCommon = document.getElementsByClassName("common box")[0];
-    const peter = oLis[1];
-
-    const oCommon = document.getElementsByClassName("common");
-    const oCommon2 = document.querySelectorAll(".common");
-
-    // examples of creating elements
-    const xiaohong = document.createElement("li");
-    xiaohong.innerText = "Xiao Hong";
-    xiaohong.id = "xiaohong";
-    // boxCommon.append(xiaohong);
-    // boxCommon.prepend(xiaohong);
-    // peter.before(xiaohong);
-    peter.after(xiaohong);
-
-    const xiaozhang = document.createElement("li");
-    xiaozhang.innerHTML = "<i><b>Xiao Zhang</b></i>";
-    xiaozhang.id = "xiaozhang";
-    boxCommon.append(xiaozhang);
-
-    xiaozhang.className = "class1 class2 class3";
-    xiaozhang.classList.remove("class1");
-    xiaozhang.classList.add("class4");
-    xiaozhang.style.color = "pink";
-
-    const grandparent = document.getElementById("grandparent");
-    const parent = document.getElementById("parent");
-    const child = document.getElementById("child");
-
-    grandparent.addEventListener(
-      "click",
-      () => {
-        console.log("grandparent");
-      },
-      false // R
-    );
-
-    parent.addEventListener(
-      "click",
-      () => {
-        console.log("parent");
-      },
-      false // R
-    );
-
-    child.addEventListener(
-      "click",
-      (event) => {
-        console.log("event", event);
-        console.log("child");
-        event.stopPropagation();
-      },
-      false // R
-    );
-  </script>
 </html>
