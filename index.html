@@ -11,118 +11,86 @@
   <body>
     <div id="root"></div>
     <script type="text/babel">
-      class Parent extends React.Component {
-        constructor(props) {
-          super(props);
-          this.state = {
-            balance: 1000,
-            showChild: false,
-          };
-          console.log("constructor() - Parent Component");
-        }
+      const Parent = (props) => {
+        const [balance, setBalance] = React.useState(1000);
+        const [showChild, setShowChild] = React.useState(false);
 
-        componentDidMount() {
-          console.log("componentDidMount() - Parent Component");
-        }
-
-        componentDidUpdate(prevProps, prevState) {
-          console.log("componentDidUpdate() - Parent Component", {
-            prevProps,
-            prevState,
-          });
-        }
-
-        componentWillUnmount() {
-          console.log("coomponentWillUnmount() - Parent Component");
-        }
-
-        render() {
-          console.log("render() - Parent Component");
-
-          return (
-            <div>
-              <p>Name: {this.props.name}</p>
-              <p>继承者们的故事</p>
-              <p>Parent</p>
-              <p>account balance: {this.state.balance}</p>
-              <button
-                onClick={() => {
-                  this.setState({
-                    showChild: !this.state.showChild,
-                  });
-                }}
-              >
-                生小宝宝 / 消失掉小宝宝
-              </button>
-              <button
-                onClick={() => {
-                  this.setState({
-                    balance: this.state.balance + 100,
-                  });
-                }}
-              >
-                给小宝宝挣奶粉钱
-              </button>
-
-              <br />
-              <br />
-              <br />
-
-              {this.state.showChild ? (
-                <Child balance={this.state.balance} />
-              ) : (
-                "no child"
-              )}
-            </div>
+        React.useEffect(() => {
+          console.log(
+            "componentDidMount() / componentDidUpdate() - Parent Component"
           );
-        }
-      }
-
-      class Child extends React.Component {
-        constructor(props) {
-          super(props);
-          this.state = {
-            balance: 0,
+          return () => {
+            console.log("clean up / componentWillUnmount() - Parent Component");
           };
-          console.log("constructor() - Child Component");
-        }
+        });
 
-        componentDidMount() {
-          console.log("componentDidMount() - Child Component");
-        }
+        // dependency array
+        // case 1: passing no dependency array --> whenever a state / props change, ALWAYS run the side effect.
+        // case 2: passing a non-empty array [A, B, C] --> only run the side effect, if one of the A, B, C changed.
+        // case 3: passing an empty array [] --> only run the side effect on the initial render i.e. componentDidMount()
 
-        componentDidUpdate(prevProps, prevState) {
-          console.log("componentDidUpdate() - Child Component", {
-            prevProps,
-            prevState,
-          });
-        }
+        console.log("render() - Parent Component");
 
-        componentWillUnmount() {
-          console.log("coomponentWillUnmount() - Child Component");
-        }
+        return (
+          <div>
+            <p>Name: {props.name}</p>
+            <p>继承者们的故事</p>
+            <p>Parent</p>
+            <p>account balance: {balance}</p>
+            <button
+              onClick={() => {
+                setShowChild(!showChild);
+              }}
+            >
+              生小宝宝 / 消失掉小宝宝
+            </button>
+            <button
+              onClick={() => {
+                setBalance(balance + 100);
+              }}
+            >
+              给小宝宝挣奶粉钱
+            </button>
 
-        render() {
-          console.log("render() - Child Component");
-          return (
-            <div>
-              <p>Child</p>
-              <p>Parent's accont balance: {this.props.balance}</p>
-              <p>自己的小金库 {this.state.balance}</p>
+            <br />
+            <br />
+            <br />
 
-              <button
-                onClick={() => {
-                  this.setState({
-                    balance: this.state.balance + 100,
-                  });
-                }}
-              >
-                我要存钱
-              </button>
-            </div>
+            {showChild ? <Child balance={balance} /> : "no child"}
+          </div>
+        );
+      };
+
+      const Child = (props) => {
+        const [balance, setBalance] = React.useState(0);
+
+        React.useEffect(() => {
+          console.log(
+            "componentDidMount() / componentDidUpdate() - Child Component"
           );
-        }
-      }
+
+          return () => {
+            console.log("clean up / componentWillUnmount() - Child Component");
+          };
+        });
+
+        console.log("render() - Child Component");
+        return (
+          <div>
+            <p>Child</p>
+            <p>Parent's accont balance: {props.balance}</p>
+            <p>自己的小金库 {balance}</p>
+
+            <button
+              onClick={() => {
+                setBalance(balance + 100);
+              }}
+            >
+              我要存钱
+            </button>
+          </div>
+        );
+      };
 
       ReactDOM.render(
         <Parent name="ZhangSan" />,
